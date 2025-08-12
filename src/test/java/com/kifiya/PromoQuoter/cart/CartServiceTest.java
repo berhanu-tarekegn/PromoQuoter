@@ -17,7 +17,7 @@ class CartServiceTest {
     private CartRepository cartRepository;
 
     @InjectMocks
-    private CartService cartService;
+    private CartServiceImpl cartService;
 
     @BeforeEach
     void setUp() {

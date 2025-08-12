@@ -18,7 +18,7 @@ class PromotionServiceTest {
     private PromotionRepository promotionRepository;
 
     @InjectMocks
-    private PromotionService promotionService;
+    private PromotionServiceImpl promotionService;
 
     @BeforeEach
     void setUp() {
