@@ -13,10 +13,10 @@ public class BuyXGetYPromotion extends Promotion {
     @NotNull
     private UUID productId;
 
-    @Min(1)
+    @Min(value = 1, message = "error.validation.promotion.buyQuantity.min")
     private int buyQuantity;
 
-    @Min(1)
+    @Min(value = 1, message = "error.validation.promotion.getQuantityFree.min")
     private int getQuantityFree;
 
     @Override

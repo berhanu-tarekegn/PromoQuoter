@@ -18,9 +18,9 @@ public class PercentOffCategoryPromotion extends Promotion {
     @NotNull
     private ProductCategory category;
 
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = false)
-    @DecimalMax(value = "1.0", inclusive = false)
+    @NotNull(message = "error.validation.promotion.discountPercentage.required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "error.validation.promotion.discountPercentage.min")
+    @DecimalMax(value = "1.0", inclusive = false, message = "error.validation.promotion.discountPercentage.max")
     private BigDecimal discountPercentage;
 
     // Getters and setters

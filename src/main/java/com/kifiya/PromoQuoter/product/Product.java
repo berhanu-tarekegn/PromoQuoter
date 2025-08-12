@@ -26,10 +26,10 @@ public class Product {
     private ProductCategory category;
 
     @NotNull(message = "error.validation.product.price.required")
-    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMin(value = "0.0", inclusive = true, message = "error.validation.product.price.min")
     private BigDecimal price;
 
-    @Min(0)
+    @Min(value = 0, message = "error.validation.product.stock.min")
     private int stock;
 
     @Version
