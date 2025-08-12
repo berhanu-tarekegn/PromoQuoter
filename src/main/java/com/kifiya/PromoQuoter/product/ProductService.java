@@ -1,25 +1,13 @@
 package com.kifiya.PromoQuoter.product;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-public class ProductService {
+public interface ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    Product saveProduct(Product product);
 
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
-    }
+    List<Product> getAllProducts();
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-
-    public Product getProductById(UUID id) {
-        return productRepository.findById(id).orElse(null);
-    }
+    Product getProductById(UUID id);
 }
