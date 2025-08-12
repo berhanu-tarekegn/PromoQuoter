@@ -2,6 +2,7 @@ package com.kifiya.PromoQuoter.product;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.kifiya.PromoQuoter.product.ProductServiceImpl;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
