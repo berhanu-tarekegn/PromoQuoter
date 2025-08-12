@@ -11,8 +11,12 @@ import java.util.List;
 @RequestMapping("/promotions")
 public class PromotionController {
 
+    private final PromotionService promotionService;
+
     @Autowired
-    private PromotionService promotionService;
+    public PromotionController(PromotionService promotionService) {
+        this.promotionService = promotionService;
+    }
 
     @PostMapping
     public ResponseEntity<Promotion> createPromotion(@RequestBody Promotion promotion) {
