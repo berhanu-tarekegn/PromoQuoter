@@ -9,8 +9,14 @@ import java.util.UUID;
 @Service
 public class CartServiceImpl implements CartService {
 
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+
     @Autowired
-    private CartRepository cartRepository;
+    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository) {
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
+    }
 
     @Override
     public Cart saveCart(Cart cart) {
