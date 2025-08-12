@@ -6,11 +6,12 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class CartService {
+public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepository cartRepository;
 
+    @Override
     public Cart saveCart(Cart cart) {
         // Example logic to check stock availability
         for (CartItem item : cart.getItems()) {
@@ -24,7 +25,18 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
+    @Override
     public Cart getCartById(UUID id) {
         return cartRepository.findById(id).orElse(null);
     }
+}
+package com.kifiya.PromoQuoter.cart;
+
+import java.util.UUID;
+
+public interface CartService {
+
+    Cart saveCart(Cart cart);
+
+    Cart getCartById(UUID id);
 }
