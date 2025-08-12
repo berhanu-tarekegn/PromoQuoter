@@ -27,6 +27,7 @@ public class BuyXGetYPromotion extends Promotion {
     public UUID getProductId() {
         return productId;
     }
+
     public void setProductId(UUID productId) {
         this.productId = productId;
     }
@@ -38,7 +39,12 @@ public class BuyXGetYPromotion extends Promotion {
     public void setBuyQuantity(int buyQuantity) {
         this.buyQuantity = buyQuantity;
     }
+
     public int getGetQuantityFree() {
         return getQuantityFree;
+    }
+
+    public void setGetQuantityFree(int getQuantityFree) {
+        this.getQuantityFree = getQuantityFree;
     }
 }

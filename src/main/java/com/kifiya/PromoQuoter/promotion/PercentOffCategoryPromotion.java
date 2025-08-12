@@ -23,5 +23,19 @@ public class PercentOffCategoryPromotion extends Promotion {
     @DecimalMax(value = "1.0", inclusive = false, message = "error.validation.promotion.discountPercentage.max")
     private BigDecimal discountPercentage;
 
-    // Getters and setters
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ProductCategory category) {
+        this.category = category;
+    }
+
+    public BigDecimal getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(BigDecimal discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
 }
