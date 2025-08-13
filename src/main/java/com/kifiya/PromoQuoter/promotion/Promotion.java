@@ -1,8 +1,16 @@
 package com.kifiya.PromoQuoter.promotion;
 
+import com.kifiya.PromoQuoter.common.AbstractEntity;
+import com.kifiya.PromoQuoter.product.ProductCategory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import java.util.UUID;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table( indexes = {
@@ -10,28 +18,15 @@ import java.util.UUID;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "promotion_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Promotion {
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class Promotion extends AbstractEntity {
 
     @NotBlank(message = "error.validation.promotion.name.required")
     private String name;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private boolean active = true;
 }
