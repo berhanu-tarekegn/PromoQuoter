@@ -2,6 +2,7 @@ package com.kifiya.PromoQuoter.cart;
 
 import com.kifiya.PromoQuoter.exception.StockUnavailableException;
 import com.kifiya.PromoQuoter.product.Product;
+import com.kifiya.PromoQuoter.rule.RuleEngine;
 import com.kifiya.PromoQuoter.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,13 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
 
+    private final RuleEngine ruleEngine;
+
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository) {
+    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, RuleEngine ruleEngine) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.ruleEngine = ruleEngine;
     }
 
     @Override
@@ -31,7 +35,8 @@ public class CartServiceImpl implements CartService {
                 throw new StockUnavailableException("Insufficient stock for product: " + product.getName());
             }
         }
-        return cartRepository.save(cart);
+        Cart processedCart = ruleEngine.applyPromotions(cart);
+        return cartRepository.save(processedCart);
     }
 
     @Override
