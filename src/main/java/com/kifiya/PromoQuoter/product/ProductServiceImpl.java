@@ -1,10 +1,12 @@
 package com.kifiya.PromoQuoter.product;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -17,16 +19,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product saveProduct(Product product) {
-        return productRepository.save(product);
+        log.info("Saving product: {}", product.getName());
+        Product savedProduct = productRepository.save(product);
+        log.debug("Saved product details: {}", savedProduct);
+        return savedProduct;
     }
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        log.info("Fetching all products");
+        List<Product> products = productRepository.findAll();
+        log.debug("Fetched products: {}", products);
+        return products;
     }
 
     @Override
     public Product getProductById(UUID id) {
-        return productRepository.findById(id).orElse(null);
+        log.info("Fetching product by ID: {}", id);
+        Product product = productRepository.findById(id).orElse(null);
+        if (product != null) {
+            log.debug("Fetched product details: {}", product);
+        } else {
+            log.warn("Product not found for ID: {}", id);
+        }
+        return product;
     }
 }
