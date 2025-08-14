@@ -2,6 +2,7 @@ package com.kifiya.PromoQuoter.product;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.kifiya.PromoQuoter.exception.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,7 @@ public class ProductServiceImpl implements ProductService {
             log.debug("Fetched product details: {}", product);
         } else {
             log.warn("Product not found for ID: {}", id);
+            throw new ProductNotFoundException("Product not found for ID: " + id);
         }
         return product;
     }
