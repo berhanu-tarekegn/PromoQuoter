@@ -6,8 +6,7 @@ import com.kifiya.PromoQuoter.product.ProductRepository;
 import com.kifiya.PromoQuoter.promotion.dto.BuyXGetYPromotionRequest;
 import com.kifiya.PromoQuoter.promotion.dto.PercentOffCategoryPromotionRequest;
 import com.kifiya.PromoQuoter.promotion.dto.PromotionRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PromotionServiceImpl implements PromotionService, PromotionRuleEngine {
 
     private static final Logger log = LoggerFactory.getLogger(PromotionServiceImpl.class);
@@ -34,6 +34,7 @@ public class PromotionServiceImpl implements PromotionService, PromotionRuleEngi
 
     @Override
     public Promotion savePromotion(PromotionRequest promotionRequest) {
+        log.info("Saving promotion: {}", promotionRequest.getName());
         Promotion promotion;
 
         if (promotionRequest instanceof PercentOffCategoryPromotionRequest p) {
@@ -58,17 +59,29 @@ public class PromotionServiceImpl implements PromotionService, PromotionRuleEngi
         } else {
             throw new ItemNotFoundException("Unknown promotion type");
         }
-        return promotionRepository.save(promotion);
+        Promotion savedPromotion = promotionRepository.save(promotion);
+        log.debug("Saved promotion details: {}", savedPromotion);
+        return savedPromotion;
     }
 
     @Override
     public List<Promotion> getAllPromotions() {
-        return promotionRepository.findAll();
+        log.info("Fetching all promotions");
+        List<Promotion> promotions = promotionRepository.findAll();
+        log.debug("Fetched promotions: {}", promotions);
+        return promotions;
     }
 
     @Override
     public Promotion getPromotionById(UUID id) {
-        return promotionRepository.findById(id).orElse(null);
+        log.info("Fetching promotion by ID: {}", id);
+        Promotion promotion = promotionRepository.findById(id).orElse(null);
+        if (promotion == null) {
+            log.warn("Promotion not found for ID: {}", id);
+            throw new PromotionNotFoundException("Promotion not found for ID: " + id);
+        }
+        log.debug("Fetched promotion details: {}", promotion);
+        return promotion;
     }
 
     public void apply(PromotionContext context) {
