@@ -1,8 +1,10 @@
-package com.kifiya.PromoQuoter.exception;
+package com.kifiya.PromoQuoter.product;
 
-public class ProductNotFoundException extends RuntimeException {
+import com.kifiya.PromoQuoter.exception.AbstractServiceException;
+
+public class ProductNotFoundException extends AbstractServiceException {
 
     public ProductNotFoundException(String message) {
-        super(message);
+        super(message, 404);
     }
 }
