@@ -121,12 +121,29 @@ mvn -Dtest=PromotionServiceUnitTest test
 
 - **URL**: `/promotions`
 - **Method**: `POST`
+
+##### Percent Off Category Promotion
+
 - **Request Body**:
   ```json
   {
     "name": "Summer Sale",
     "discountPercentage": 15,
-    "promotionType": "PERCENT_OFF_CATEGORY"
+    "promotionType": "PERCENT_OFF_CATEGORY",
+    "category": "Electronics"
+  }
+  ```
+
+##### Buy X Get Y Promotion
+
+- **Request Body**:
+  ```json
+  {
+    "name": "Buy 2 Get 1 Free",
+    "promotionType": "BUY_X_GET_Y",
+    "productId": "123e4567-e89b-12d3-a456-426614174000",
+    "buyQuantity": 2,
+    "getQuantityFree": 1
   }
   ```
 
