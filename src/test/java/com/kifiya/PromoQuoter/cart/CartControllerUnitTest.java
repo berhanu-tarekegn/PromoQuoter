@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 class CartControllerUnitTest {
@@ -28,6 +29,29 @@ class CartControllerUnitTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testGetQuoteThrowsException() {
+        CartRequest cartRequest = new CartRequest();
+
+        doThrow(new RuntimeException("Service exception")).when(cartService).getQuote(any(CartRequest.class));
+
+        ResponseEntity<CartQuoteResponse> response = cartController.getQuote(cartRequest);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void testConfirmOrderThrowsException() {
+        CartRequest cartRequest = new CartRequest();
+        UUID idempotencyKey = UUID.randomUUID();
+
+        doThrow(new RuntimeException("Service exception")).when(cartService).confirmOrder(any(CartRequest.class), any(UUID.class));
+
+        ResponseEntity<CartConfirmationResponse> response = cartController.confirmOrder(cartRequest, idempotencyKey);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
