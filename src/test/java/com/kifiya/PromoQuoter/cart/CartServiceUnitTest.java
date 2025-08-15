@@ -46,7 +46,7 @@ class CartServiceUnitTest {
         UUID idempotencyKey = UUID.randomUUID();
         CartConfirmationResponse expectedResponse = new CartConfirmationResponse();
 
-        when(cartRepository.confirm(any(CartRequest.class), any(UUID.class))).thenReturn(expectedResponse);
+        when(cartService.confirmOrder(any(CartRequest.class), any(UUID.class))).thenReturn(expectedResponse);
 
         CartConfirmationResponse response = cartService.confirmOrder(cartRequest, idempotencyKey);
 
