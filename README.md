@@ -83,7 +83,8 @@ To run tests separately, use the following Gradle commands:
 - **Request Body**:
   ```json
   {
-    "items": [
+    "idempotencyKey": "123e4567-e89b-12d3-a456-426614174000",
+    "requestHash": "e99a18c428cb38d5f260853678922e03",
       {
         "productId": "123e4567-e89b-12d3-a456-426614174000",
         "quantity": 2
