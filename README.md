@@ -64,12 +64,12 @@ PromoQuoter is a Spring Boot application designed to manage promotions, carts, a
 
 ## Running Tests
 
-To run tests separately, use the following Maven commands:
+To run tests separately, use the following Gradle commands:
 
 ```bash
-mvn -Dtest=CartControllerUnitTest test
-mvn -Dtest=CartServiceUnitTest test
-mvn -Dtest=PromotionServiceUnitTest test
+./gradlew test --tests "com.kifiya.PromoQuoter.cart.CartControllerUnitTest"
+./gradlew test --tests "com.kifiya.PromoQuoter.cart.CartServiceUnitTest"
+./gradlew test --tests "com.kifiya.PromoQuoter.promotion.PromotionServiceUnitTest"
 ```
 
 ## API Endpoints
