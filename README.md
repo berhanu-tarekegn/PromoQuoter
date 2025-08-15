@@ -130,7 +130,7 @@ To run tests separately, use the following Gradle commands:
     "name": "Summer Sale",
     "discountPercentage": 15,
     "promotionType": "PERCENT_OFF_CATEGORY",
-    "category": "Electronics"
+    "category": "ELECTRONICS"
   }
   ```
 
