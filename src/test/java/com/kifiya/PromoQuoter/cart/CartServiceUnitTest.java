@@ -33,7 +33,7 @@ class CartServiceUnitTest {
         CartRequest cartRequest = new CartRequest();
         CartQuoteResponse expectedResponse = new CartQuoteResponse();
 
-        when(cartRepository.getQuote(any(CartRequest.class))).thenReturn(expectedResponse);
+        when(cartService.getQuote(any(CartRequest.class))).thenReturn(expectedResponse);
 
         CartQuoteResponse response = cartService.getQuote(cartRequest);
 
