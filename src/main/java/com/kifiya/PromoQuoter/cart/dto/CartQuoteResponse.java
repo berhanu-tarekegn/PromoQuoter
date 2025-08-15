@@ -11,6 +11,13 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class CartQuoteResponse {
+    public CartQuoteResponse(List<CartLineItem> cartLineItems, BigDecimal subtotal, BigDecimal totalDiscount, BigDecimal finalPrice, List<String> appliedPromotions) {
+        this.cartLineItems = cartLineItems;
+        this.subtotal = subtotal;
+        this.totalDiscount = totalDiscount;
+        this.finalPrice = finalPrice;
+        this.appliedPromotions = appliedPromotions;
+    }
     private List<CartLineItem> cartLineItems;
     private BigDecimal subtotal;
     private BigDecimal totalDiscount;
