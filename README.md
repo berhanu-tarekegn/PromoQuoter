@@ -167,6 +167,34 @@ mvn -Dtest=PromotionServiceUnitTest test
 4. **Access the application**:
    - The application runs on `http://localhost:8080`.
 
+## Build and Run with Gradle
+
+### Building the Project
+
+To build the project, use the following command:
+
+```bash
+./gradlew build
+```
+
+### Running the Application
+
+To run the application, use the following command:
+
+```bash
+./gradlew bootRun
+```
+
+### Running Tests
+
+To run tests separately, use the following Gradle commands:
+
+```bash
+./gradlew test --tests "com.kifiya.PromoQuoter.cart.CartControllerUnitTest"
+./gradlew test --tests "com.kifiya.PromoQuoter.cart.CartServiceUnitTest"
+./gradlew test --tests "com.kifiya.PromoQuoter.promotion.PromotionServiceUnitTest"
+```
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
