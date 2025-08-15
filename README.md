@@ -72,6 +72,64 @@ mvn -Dtest=CartServiceUnitTest test
 mvn -Dtest=PromotionServiceUnitTest test
 ```
 
+## API Endpoints
+
+### Cart Endpoints
+
+#### Get Quote
+
+- **URL**: `/cart/quote`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "items": [
+      {
+        "productId": "123e4567-e89b-12d3-a456-426614174000",
+        "quantity": 2
+      }
+    ]
+  }
+  ```
+
+#### Confirm Order
+
+- **URL**: `/cart/confirm`
+- **Method**: `POST`
+- **Headers**: 
+  - `Idempotency-Key`: `123e4567-e89b-12d3-a456-426614174000`
+- **Request Body**:
+  ```json
+  {
+    "items": [
+      {
+        "productId": "123e4567-e89b-12d3-a456-426614174000",
+        "quantity": 2
+      }
+    ]
+  }
+  ```
+
+### Promotion Endpoints
+
+#### Get All Promotions
+
+- **URL**: `/promotions`
+- **Method**: `GET`
+
+#### Save Promotion
+
+- **URL**: `/promotions`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "name": "Summer Sale",
+    "discountPercentage": 15,
+    "promotionType": "PERCENT_OFF_CATEGORY"
+  }
+  ```
+
 ## Getting Started
 
 1. **Clone the repository**:
