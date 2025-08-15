@@ -3,7 +3,7 @@ package com.kifiya.PromoQuoter.promotion;
 import com.kifiya.PromoQuoter.exception.ItemNotFoundException;
 import com.kifiya.PromoQuoter.product.Product;
 import com.kifiya.PromoQuoter.product.ProductRepository;
-import com.kifiya.PromoQuoter.promotion.dto.BuyXGetYPromotionRequest;
+import com.kifiya.PromoQuoter.promotion.dto.PromotionRequest;
 import com.kifiya.PromoQuoter.promotion.dto.PromotionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,49 +40,45 @@ class PromotionServiceImplTest {
 
     @Test
     void testSavePromotion() {
-        PromotionRequest request = new BuyXGetYPromotionRequest();
-        request.setName("Test Promotion");
+        PromotionRequest request = new PromotionRequest();
+        Promotion expectedPromotion = new Promotion();
 
-        Promotion promotion = new BuyXGetYPromotion();
-        promotion.setName("Test Promotion");
+        when(promotionRepository.save(any(Promotion.class))).thenReturn(expectedPromotion);
 
-        when(promotionRepository.save(any(Promotion.class))).thenReturn(promotion);
+        Promotion result = promotionService.savePromotion(request);
 
-        Promotion savedPromotion = promotionService.savePromotion(request);
-
-        assertNotNull(savedPromotion);
-        assertEquals("Test Promotion", savedPromotion.getName());
+        assertNotNull(result);
+        assertEquals(expectedPromotion, result);
     }
 
     @Test
     void testGetAllPromotions() {
-        when(promotionRepository.findAll()).thenReturn(List.of(new BuyXGetYPromotion()));
+        List<Promotion> promotions = List.of(new Promotion());
+        when(promotionRepository.findAll()).thenReturn(promotions);
 
-        List<Promotion> promotions = promotionService.getAllPromotions();
+        List<Promotion> result = promotionService.getAllPromotions();
 
-        assertFalse(promotions.isEmpty());
+        assertNotNull(result);
+        assertEquals(promotions.size(), result.size());
     }
 
     @Test
     void testGetPromotionById() {
-        UUID promotionId = UUID.randomUUID();
-        Promotion promotion = new BuyXGetYPromotion();
-        promotion.setId(promotionId);
+        UUID id = UUID.randomUUID();
+        Promotion promotion = new Promotion();
+        when(promotionRepository.findById(id)).thenReturn(Optional.of(promotion));
 
-        when(promotionRepository.findById(promotionId)).thenReturn(Optional.of(promotion));
+        Promotion result = promotionService.getPromotionById(id);
 
-        Promotion foundPromotion = promotionService.getPromotionById(promotionId);
-
-        assertNotNull(foundPromotion);
-        assertEquals(promotionId, foundPromotion.getId());
+        assertNotNull(result);
+        assertEquals(promotion, result);
     }
 
     @Test
     void testGetPromotionByIdNotFound() {
-        UUID promotionId = UUID.randomUUID();
+        UUID id = UUID.randomUUID();
+        when(promotionRepository.findById(id)).thenReturn(Optional.empty());
 
-        when(promotionRepository.findById(promotionId)).thenReturn(Optional.empty());
-
-        assertThrows(ItemNotFoundException.class, () -> promotionService.getPromotionById(promotionId));
+        assertThrows(ItemNotFoundException.class, () -> promotionService.getPromotionById(id));
     }
 }
