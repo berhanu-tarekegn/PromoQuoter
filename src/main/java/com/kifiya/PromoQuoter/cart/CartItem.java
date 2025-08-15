@@ -1,9 +1,16 @@
 package com.kifiya.PromoQuoter.cart;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class CartItem {
 
     @Id
@@ -11,29 +18,6 @@ public class CartItem {
     private UUID id;
 
     private UUID productId;
+
     private int quantity;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 }

@@ -1,13 +1,16 @@
 package com.kifiya.PromoQuoter.promotion;
 
+import com.kifiya.PromoQuoter.cart.CartContext;
+import com.kifiya.PromoQuoter.exception.DatabaseConstraintViolationException;
 import com.kifiya.PromoQuoter.exception.ItemNotFoundException;
 import com.kifiya.PromoQuoter.product.Product;
 import com.kifiya.PromoQuoter.product.ProductRepository;
 import com.kifiya.PromoQuoter.promotion.dto.BuyXGetYPromotionRequest;
-import com.kifiya.PromoQuoter.promotion.dto.PercentOffCategoryPromotionRequest;
 import com.kifiya.PromoQuoter.promotion.dto.PromotionRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -17,9 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class PromotionServiceImpl implements PromotionService, PromotionRuleEngine {
-
-    private static final Logger log = LoggerFactory.getLogger(PromotionServiceImpl.class);
+public class PromotionServiceImpl implements PromotionService {
 
     private final PromotionRepository promotionRepository;
     private final PromotionRuleFactory promotionRuleFactory;
@@ -34,34 +35,25 @@ public class PromotionServiceImpl implements PromotionService, PromotionRuleEngi
 
     @Override
     public Promotion savePromotion(PromotionRequest promotionRequest) {
+
         log.info("Saving promotion: {}", promotionRequest.getName());
-        Promotion promotion;
 
-        if (promotionRequest instanceof PercentOffCategoryPromotionRequest p) {
-            PercentOffCategoryPromotion entity = new PercentOffCategoryPromotion();
-            entity.setName(p.name);
-            entity.setCategory(p.category);
-            entity.setDiscountPercentage(p.discountPercentage);
-            promotion = entity;
+        Promotion promotion = promotionRequest.toEntity();
 
-        } else if (promotionRequest instanceof BuyXGetYPromotionRequest b) {
-            BuyXGetYPromotion entity = new BuyXGetYPromotion();
-            entity.setName(b.name);
-            entity.setBuyQuantity(b.buyQuantity);
-            entity.setGetQuantityFree(b.getQuantity);
-
-            Product product = productRepository.findById(b.productId)
-                    .orElseThrow(() -> new ItemNotFoundException("Product not found with ID: " + b.productId));
-            entity.setProductId(product.getId());
-
-            promotion = entity;
-
-        } else {
-            throw new ItemNotFoundException("Unknown promotion type");
+        if (promotion instanceof BuyXGetYPromotion b && promotionRequest instanceof BuyXGetYPromotionRequest br) {
+            Product product = productRepository.findById(br.productId)
+                    .orElseThrow(() -> new ItemNotFoundException("Product not found with id: " + br.productId));
+            b.setProductId(product.getId());
         }
-        Promotion savedPromotion = promotionRepository.save(promotion);
-        log.debug("Saved promotion details: {}", savedPromotion);
-        return savedPromotion;
+        try {
+            Promotion savedPromotion = promotionRepository.save(promotion);
+            log.debug("Saved promotion details: {}", savedPromotion);
+            return savedPromotion;
+        } catch (DataIntegrityViolationException | ConstraintViolationException ex) {
+           log.error("Database conflict with existing promotion", ex.getMessage());
+            throw new DatabaseConstraintViolationException(ex.getMessage());
+        }
+
     }
 
     @Override
@@ -78,13 +70,14 @@ public class PromotionServiceImpl implements PromotionService, PromotionRuleEngi
         Promotion promotion = promotionRepository.findById(id).orElse(null);
         if (promotion == null) {
             log.warn("Promotion not found for ID: {}", id);
-            throw new PromotionNotFoundException("Promotion not found for ID: " + id);
+            throw new ItemNotFoundException("Promotion not found for ID: " + id);
         }
         log.debug("Fetched promotion details: {}", promotion);
         return promotion;
     }
 
-    public void apply(PromotionContext context) {
+    @Override
+    public void applyPromotions(CartContext context) {
         List<Promotion> promotions = promotionRepository.findAll();
 
         List<PromotionRuleEngine> rules = promotions.stream()
@@ -95,10 +88,5 @@ public class PromotionServiceImpl implements PromotionService, PromotionRuleEngi
         for (PromotionRuleEngine rule : rules) {
             rule.apply(context);
         }
-    }
-
-    @Override
-    public int getOrder() {
-        return 10;
     }
 }

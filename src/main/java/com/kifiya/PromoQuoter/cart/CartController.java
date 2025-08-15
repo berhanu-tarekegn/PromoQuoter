@@ -1,30 +1,38 @@
 package com.kifiya.PromoQuoter.cart;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.kifiya.PromoQuoter.cart.dto.CartRequest;
+import com.kifiya.PromoQuoter.cart.dto.CartConfirmationResponse;
+import com.kifiya.PromoQuoter.cart.dto.CartQuoteResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/cart")
 public class CartController {
-
     private final CartService cartService;
 
-    @Autowired
     public CartController(CartService cartService) {
         this.cartService = cartService;
     }
 
     @PostMapping("/quote")
-    public ResponseEntity<Cart> quoteCart(@RequestBody Cart cart) {
-        // Implement logic to calculate the cart's final price
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<CartQuoteResponse> getQuote(@Valid @RequestBody CartRequest cartRequest) {
+
+        return ResponseEntity.ok(cartService.getQuote(cartRequest));
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<Cart> confirmCart(@RequestBody Cart cart) {
-        // Implement logic to validate stock and reserve inventory
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<CartConfirmationResponse> confirmOrder(
+            @Valid @RequestBody CartRequest cartRequest,
+            @RequestHeader(value = "Idempotency-Key", required = true) UUID idempotencyKey) {
+        try {
+            CartConfirmationResponse response = cartService.confirmOrder(cartRequest, idempotencyKey);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).build(); // 409 Conflict for stock issues
+        }
     }
 }

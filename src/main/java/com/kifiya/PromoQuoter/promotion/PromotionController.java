@@ -1,8 +1,8 @@
 package com.kifiya.PromoQuoter.promotion;
 
+import com.kifiya.PromoQuoter.promotion.dto.PromotionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,14 +19,14 @@ public class PromotionController {
     }
 
     @PostMapping
-    public ResponseEntity<Promotion> createPromotion(@RequestBody Promotion promotion) {
-        Promotion createdPromotion = promotionService.savePromotion(promotion);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPromotion);
+    public Promotion createPromotion(@Validated @RequestBody PromotionRequest promotion) {
+        Promotion persistedPromotion = promotionService.savePromotion(promotion);
+        return persistedPromotion;
     }
 
     @GetMapping
-    public ResponseEntity<List<Promotion>> getAllPromotions() {
+    public List<Promotion> getAllPromotions() {
         List<Promotion> promotions = promotionService.getAllPromotions();
-        return ResponseEntity.ok(promotions);
+        return promotions;
     }
 }

@@ -3,6 +3,7 @@ package com.kifiya.PromoQuoter.product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,14 +20,13 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product createdProduct = productService.saveProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+    public Product createProduct(@Validated Product product) {
+
+        return productService.saveProduct(product);
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 }

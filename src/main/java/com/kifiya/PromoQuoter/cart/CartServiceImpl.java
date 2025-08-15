@@ -1,47 +1,38 @@
 package com.kifiya.PromoQuoter.cart;
 
-import com.kifiya.PromoQuoter.exception.StockUnavailableException;
-import com.kifiya.PromoQuoter.product.Product;
-import com.kifiya.PromoQuoter.rule.RuleEngine;
-import com.kifiya.PromoQuoter.product.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kifiya.PromoQuoter.cart.dto.CartRequest;
+import com.kifiya.PromoQuoter.cart.dto.CartConfirmationResponse;
+import com.kifiya.PromoQuoter.cart.dto.CartQuoteResponse;
+import com.kifiya.PromoQuoter.order.OrderService;
+import com.kifiya.PromoQuoter.product.ProductService;
+import com.kifiya.PromoQuoter.promotion.*;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import java.util.UUID;
 
+import java.util.*;
 
 @Service
+@Slf4j
+@AllArgsConstructor
 public class CartServiceImpl implements CartService {
 
-    private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
+    private final PromotionService promotionService;
+    private final OrderService orderService;
 
-    private final RuleEngine ruleEngine;
 
-    @Autowired
-    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, RuleEngine ruleEngine) {
-        this.cartRepository = cartRepository;
-        this.productRepository = productRepository;
-        this.ruleEngine = ruleEngine;
+    @Override
+    public CartQuoteResponse getQuote(CartRequest request) {
+        var cartItems = productService.fetchProductsForCart(request.getItems());
+        var context = new CartContext(cartItems);
+        promotionService.applyPromotions(context);
+        return CartQuoteResponse.fromContext(context);
     }
 
     @Override
-    public Cart saveCart(Cart cart) {
-        // Example logic to check stock availability
-        for (CartItem item : cart.getItems()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new StockUnavailableException("Product not found: " + item.getProductId()));
-
-            if (product.getStock() < item.getQuantity()) {
-                throw new StockUnavailableException("Insufficient stock for product: " + product.getName());
-            }
-        }
-        Cart processedCart = ruleEngine.applyPromotions(cart);
-        return cartRepository.save(processedCart);
+    public CartConfirmationResponse confirmOrder(CartRequest request, UUID idempotencyKey) {
+        return orderService.createOrder(request, idempotencyKey);
     }
 
-    @Override
-    public Cart getCartById(UUID id) {
-        return cartRepository.findById(id).orElse(null);
-    }
 }
-

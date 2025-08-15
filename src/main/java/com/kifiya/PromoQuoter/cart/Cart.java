@@ -1,10 +1,18 @@
 package com.kifiya.PromoQuoter.cart;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Cart {
 
     @Id
@@ -14,19 +22,9 @@ public class Cart {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items;
 
-    public UUID getId() {
-        return id;
-    }
+    @Column(unique = true, nullable = true)
+    private String idempotencyKey;
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public List<CartItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<CartItem> items) {
-        this.items = items;
-    }
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal finalPrice;
 }

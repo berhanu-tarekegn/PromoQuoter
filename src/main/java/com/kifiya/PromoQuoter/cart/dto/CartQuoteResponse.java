@@ -1,8 +1,11 @@
 package com.kifiya.PromoQuoter.cart.dto;
 
 import com.kifiya.PromoQuoter.cart.CartContext;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -10,14 +13,9 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CartQuoteResponse {
-    public CartQuoteResponse(List<CartLineItem> cartLineItems, BigDecimal subtotal, BigDecimal totalDiscount, BigDecimal finalPrice, List<String> appliedPromotions) {
-        this.cartLineItems = cartLineItems;
-        this.subtotal = subtotal;
-        this.totalDiscount = totalDiscount;
-        this.finalPrice = finalPrice;
-        this.appliedPromotions = appliedPromotions;
-    }
     private List<CartLineItem> cartLineItems;
     private BigDecimal subtotal;
     private BigDecimal totalDiscount;

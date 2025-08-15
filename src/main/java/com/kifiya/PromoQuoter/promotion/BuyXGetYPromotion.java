@@ -4,47 +4,26 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
 @DiscriminatorValue("BUY_X_GET_Y")
+@Getter
+@Setter
+@NoArgsConstructor
 public class BuyXGetYPromotion extends Promotion {
 
     @NotNull
     private UUID productId;
 
-    @Min(value = 1, message = "error.validation.promotion.buyQuantity.min")
+    @Min(value = 1, message = "Buy quantity is required")
     private int buyQuantity;
 
-    @Min(value = 1, message = "error.validation.promotion.getQuantityFree.min")
+    @Min(value = 1, message = "Get free quantity is required")
     private int getQuantityFree;
 
-    @Override
-    public void setId(UUID id) {
-        super.setId(id);
-    }
-
-    public UUID getProductId() {
-        return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
-    }
-
-    public int getBuyQuantity() {
-        return buyQuantity;
-    }
-
-    public void setBuyQuantity(int buyQuantity) {
-        this.buyQuantity = buyQuantity;
-    }
-
-    public int getGetQuantityFree() {
-        return getQuantityFree;
-    }
-
-    public void setGetQuantityFree(int getQuantityFree) {
-        this.getQuantityFree = getQuantityFree;
-    }
 }

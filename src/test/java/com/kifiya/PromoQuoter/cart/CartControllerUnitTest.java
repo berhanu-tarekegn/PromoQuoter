@@ -1,83 +1,111 @@
 package com.kifiya.PromoQuoter.cart;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kifiya.PromoQuoter.cart.dto.CartConfirmationResponse;
+import com.kifiya.PromoQuoter.cart.dto.CartItemRequest;
 import com.kifiya.PromoQuoter.cart.dto.CartQuoteResponse;
 import com.kifiya.PromoQuoter.cart.dto.CartRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(CartController.class)
 class CartControllerUnitTest {
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
     private CartService cartService;
 
-    @InjectMocks
-    private CartController cartController;
+    @Test
+    void getQuote_shouldReturnCartQuoteResponse() throws Exception {
+        CartQuoteResponse mockResponse = CartQuoteResponse.builder()
+                .cartLineItems(Collections.emptyList())
+                .subtotal(BigDecimal.valueOf(100))
+                .totalDiscount(BigDecimal.valueOf(10))
+                .finalPrice(BigDecimal.valueOf(90))
+                .appliedPromotions(List.of("Promo1"))
+                .build();
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+        Mockito.when(cartService.getQuote(any(CartRequest.class)))
+                .thenReturn(mockResponse);
+
+        CartRequest cartRequest = new CartRequest();
+
+        cartRequest.setItems(List.of(new CartItemRequest(UUID.randomUUID(), 34)));
+
+        mockMvc.perform(post("/cart/quote")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cartRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(mockResponse)));
     }
 
     @Test
-    void testGetQuoteThrowsException() {
-        CartRequest cartRequest = new CartRequest();
-
-        doThrow(new RuntimeException("Service exception")).when(cartService).getQuote(any(CartRequest.class));
-
-        ResponseEntity<CartQuoteResponse> response = cartController.getQuote(cartRequest);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
-    void testConfirmOrderThrowsException() {
-        CartRequest cartRequest = new CartRequest();
+    void confirmOrder_shouldReturnConfirmationResponse() throws Exception {
         UUID idempotencyKey = UUID.randomUUID();
+        CartConfirmationResponse mockResponse = CartConfirmationResponse.builder()
+                .orderId(UUID.randomUUID())
+                .finalPrice(BigDecimal.valueOf(90))
+                .build();
 
-        doThrow(new RuntimeException("Service exception")).when(cartService).confirmOrder(any(CartRequest.class), any(UUID.class));
+        Mockito.when(cartService.confirmOrder(any(CartRequest.class), eq(idempotencyKey)))
+                .thenReturn(mockResponse);
 
-        ResponseEntity<CartConfirmationResponse> response = cartController.confirmOrder(cartRequest, idempotencyKey);
+        CartRequest cartRequest = new CartRequest();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        cartRequest.setItems(List.of(new CartItemRequest(UUID.randomUUID(), 34)));
+
+        mockMvc.perform(post("/cart/confirm")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", idempotencyKey)
+                        .content(objectMapper.writeValueAsString(cartRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(mockResponse)));
     }
 
     @Test
-    void testGetQuote() {
-        CartRequest cartRequest = new CartRequest();
-        CartQuoteResponse expectedResponse = new CartQuoteResponse();
-
-        when(cartService.getQuote(any(CartRequest.class))).thenReturn(expectedResponse);
-
-        ResponseEntity<CartQuoteResponse> response = cartController.getQuote(cartRequest);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-    }
-
-    @Test
-    void testConfirmOrder() {
-        CartRequest cartRequest = new CartRequest();
+    void confirmOrder_shouldReturnConflict_whenIllegalStateExceptionThrown() throws Exception {
         UUID idempotencyKey = UUID.randomUUID();
-        CartConfirmationResponse expectedResponse = new CartConfirmationResponse();
+        Mockito.when(cartService.confirmOrder(any(CartRequest.class), eq(idempotencyKey)))
+                .thenThrow(new IllegalStateException("Out of stock"));
 
-        when(cartService.confirmOrder(any(CartRequest.class), any(UUID.class))).thenReturn(expectedResponse);
+        CartRequest cartRequest = new CartRequest();
 
-        ResponseEntity<CartConfirmationResponse> response = cartController.confirmOrder(cartRequest, idempotencyKey);
+        cartRequest.setItems(List.of(new CartItemRequest(UUID.randomUUID(), 34)));
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
+        mockMvc.perform(post("/cart/confirm")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Idempotency-Key", idempotencyKey)
+                        .content(objectMapper.writeValueAsString(cartRequest)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void getQuote_shouldReturnBadRequest_whenItemsEmpty() throws Exception {
+        CartRequest invalidRequest = new CartRequest();
+
+        mockMvc.perform(post("/cart/quote")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
     }
 }

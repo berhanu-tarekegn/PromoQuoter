@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: PromoQuoter
+
+  datasource:
+    url: jdbc:h2:mem:promoquoter-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+
+logging:
+  level:
+    root: INFO
+    com.kifiya.promoqouter: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+

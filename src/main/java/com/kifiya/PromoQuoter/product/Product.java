@@ -1,22 +1,24 @@
 package com.kifiya.PromoQuoter.product;
 
+import com.kifiya.PromoQuoter.common.AbstractEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 
 @Entity
-@Table(
-        indexes = {
-                @Index(name = "product_idx_uuid", columnList = "id", unique = true)
-        }
-)
-public class Product {
-
-    @Id
-    @GeneratedValue
-    private UUID id;
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "category"}),
+        indexes = {@Index(name = "product_idx_uuid", columnList = "id", unique = true)})
+@Getter
+@Setter
+@NoArgsConstructor
+public class Product extends AbstractEntity implements Serializable {
 
     @NotBlank(message = "error.validation.product.name.required")
     private String name;
@@ -32,53 +34,4 @@ public class Product {
     @Min(value = 0, message = "error.validation.product.stock.min")
     private int stock;
 
-    @Version
-    private int version;
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ProductCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(ProductCategory category) {
-        this.category = category;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
 }

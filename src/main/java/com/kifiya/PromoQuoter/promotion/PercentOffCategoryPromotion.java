@@ -7,11 +7,19 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
 @Entity
 @DiscriminatorValue("PERCENT_OFF_CATEGORY")
+@Getter
+@Setter
+@NoArgsConstructor
 public class PercentOffCategoryPromotion extends Promotion {
 
     @Enumerated(EnumType.STRING)
@@ -19,23 +27,6 @@ public class PercentOffCategoryPromotion extends Promotion {
     private ProductCategory category;
 
     @NotNull(message = "error.validation.promotion.discountPercentage.required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "error.validation.promotion.discountPercentage.min")
-    @DecimalMax(value = "1.0", inclusive = false, message = "error.validation.promotion.discountPercentage.max")
     private BigDecimal discountPercentage;
 
-    public ProductCategory getCategory() {
-        return category;
-    }
-
-    public void setCategory(ProductCategory category) {
-        this.category = category;
-    }
-
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
 }
